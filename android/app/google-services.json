@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "826525075997",
+    "project_id": "chefmind-fc748",
+    "storage_bucket": "chefmind-fc748.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826525075997:android:dafbf8dcab6d09a13694f4",
+        "android_client_info": {
+          "package_name": "com.example.chefmind"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsod4dtvS46Iv2A9UslgNf5pFV440mrRo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
