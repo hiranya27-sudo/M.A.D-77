@@ -9,6 +9,7 @@ class RecipeService {
   final RemoteConfigService _config;
   RecipeService(this._config);
 
+  // Build the prompt from ingredients + dietary profile
   String _buildPrompt({
     required List<Ingredient> ingredients,
     required String dietaryType,
@@ -25,43 +26,40 @@ class RecipeService {
 
     return '''
 You are a professional chef AI.
-Return ONLY a valid JSON array. No markdown, no explanation, no extra text outside the JSON.
-
+Return ONLY a valid JSON array. No markdown, no explanation, no extra text.
+ 
 Dietary type: $dietaryType
-Allergies to strictly avoid: $allergyText
+Allergies to avoid: $allergyText
 Available ingredients: $ingredientList
-
+ 
 Rules:
-- Prioritise ingredients that expire soonest
-- Strictly exclude ingredients matching the allergy list
+- Prioritise ingredients expiring soonest
+- Strictly exclude any ingredient matching the allergy list
 - Return exactly 3 recipes
-
-Each recipe must follow this exact JSON structure:
+ 
+JSON format for each recipe:
 {
-  "name": "string",
-  "cook_time_mins": number,
-  "difficulty": "Easy" or "Medium" or "Hard",
-  "calories": number,
-  "ingredients_used": ["string", "string"],
-  "ingredients_missing": ["string"],
-  "steps": ["Step 1...", "Step 2..."]
+  'name': string,
+  'cook_time_mins': number,
+  'difficulty': 'Easy' or 'Medium' or 'Hard',
+  'calories': number,
+  'ingredients_used': [list of strings],
+  'ingredients_missing': [list of strings],
+  'steps': [list of step strings]
 }
-
-Return only the JSON array, nothing else.
 ''';
   }
 
+  // Call Gemini and return list of recipes
   Future<List<Recipe>> generateRecipes({
     required List<Ingredient> ingredients,
     required String dietaryType,
     required List<String> allergies,
   }) async {
-    final apiKey = _config.geminiApiKey;
-    if (apiKey.isEmpty) {
-      throw Exception('Gemini API key not found in Remote Config');
-    }
-
-    final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+    final model = GenerativeModel(
+      model: 'gemini-1.5-flash',
+      apiKey: _config.geminiApiKey,
+    );
 
     final prompt = _buildPrompt(
       ingredients: ingredients,
@@ -70,10 +68,14 @@ Return only the JSON array, nothing else.
     );
 
     final response = await model.generateContent([Content.text(prompt)]);
+
+    // Extract the text from Gemini response
     final text = response.text ?? '';
 
+    // Remove any accidental markdown fences
     final cleaned = text.replaceAll('```json', '').replaceAll('```', '').trim();
 
+    // Parse JSON and convert to Recipe list
     final List<dynamic> jsonList = jsonDecode(cleaned);
     return jsonList
         .map((j) => Recipe.fromJson(j as Map<String, dynamic>))

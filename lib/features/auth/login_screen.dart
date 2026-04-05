@@ -33,9 +33,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await ref
           .read(authServiceProvider)
-          .login(_emailCtrl.text.trim(), _passwordCtrl.text.trim());
-      // GoRouter redirect handles navigation automatically
+          .login(
+            email: _emailCtrl.text.trim(),
+            password: _passwordCtrl.text.trim(),
+          );
     } catch (e) {
+      debugPrint('LOGIN ERROR: $e');
       setState(() => _error = 'Login failed. Check your email and password.');
     } finally {
       setState(() => _loading = false);

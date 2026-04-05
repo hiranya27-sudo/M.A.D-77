@@ -7,11 +7,11 @@ class RemoteConfigService {
   Future<void> initialise() async {
     await _rc.setConfigSettings(
       RemoteConfigSettings(
-        fetchTimeout: const Duration(seconds: 15),
+        fetchTimeout: const Duration(seconds: 10),
         minimumFetchInterval: const Duration(hours: 1),
       ),
     );
-    await _rc.setDefaults({'gemini_api_key': ''});
+
     await _rc.fetchAndActivate();
   }
 
