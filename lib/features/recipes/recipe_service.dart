@@ -1,10 +1,12 @@
-/*import 'dart:convert';
+import 'dart:convert';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../ingredients/ingredient_model.dart';
+import '../../services/remote_config_service.dart';
 import 'recipe_model.dart';
 
 class RecipeService {
+  final RemoteConfigService _config;
   RecipeService(this._config);
 
   String _buildPrompt({
@@ -55,8 +57,9 @@ Return only the JSON array, nothing else.
     required List<String> allergies,
   }) async {
     final apiKey = _config.geminiApiKey;
-    if (apiKey.isEmpty)
+    if (apiKey.isEmpty) {
       throw Exception('Gemini API key not found in Remote Config');
+    }
 
     final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
 
@@ -69,7 +72,6 @@ Return only the JSON array, nothing else.
     final response = await model.generateContent([Content.text(prompt)]);
     final text = response.text ?? '';
 
-    // Strip markdown fences if Gemini adds them
     final cleaned = text.replaceAll('```json', '').replaceAll('```', '').trim();
 
     final List<dynamic> jsonList = jsonDecode(cleaned);
@@ -82,4 +84,3 @@ Return only the JSON array, nothing else.
 final recipeServiceProvider = Provider<RecipeService>((ref) {
   return RecipeService(ref.read(remoteConfigServiceProvider));
 });
-}*/

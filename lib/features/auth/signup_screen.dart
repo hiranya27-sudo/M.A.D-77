@@ -43,7 +43,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     try {
       await ref
           .read(authServiceProvider)
-          .signUp(_emailCtrl.text.trim(), _passwordCtrl.text.trim());
+          .signUp(_emailCtrl.text.trim(), _passwordCtrl.text.trim()
+          ,dietaryType: _dietaryType,   // ← pass dietary type
+          allergies: _allergies);        // ← pass allergies
     } catch (e) {
       setState(() => _error = 'Sign up failed. Try a different email.');
     } finally {

@@ -17,7 +17,6 @@ class _RecipeScreenState extends ConsumerState<RecipeScreen> {
   bool _loading = false;
   String? _error;
 
-  // TODO: replace with values from user profile saved in Firestore
   static const String _dietaryType = 'omnivore';
   static const List<String> _allergies = [];
 
@@ -37,23 +36,15 @@ class _RecipeScreenState extends ConsumerState<RecipeScreen> {
         return;
       }
 
-      /*final recipes = await ref
+      // ✅ Uncommented and clean — no stray widget inside here
+      final recipes = await ref
           .read(recipeServiceProvider)
           .generateRecipes(
             ingredients: ingredients,
             dietaryType: _dietaryType,
             allergies: _allergies,
-          );*/
+          );
 
-      @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(title: const Text('Recipes')),
-    body: const Center(
-      child: Text('Recipe feature coming soon 🚧'),
-    ),
-  );
-}
       setState(() => _recipes = recipes);
     } catch (e) {
       setState(
@@ -77,7 +68,6 @@ Widget build(BuildContext context) {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Generate button
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -99,7 +89,6 @@ Widget build(BuildContext context) {
             ),
             const SizedBox(height: 20),
 
-            // Loading state
             if (_loading)
               const Expanded(
                 child: Center(
@@ -117,7 +106,6 @@ Widget build(BuildContext context) {
                 ),
               ),
 
-            // Error state
             if (_error != null && !_loading)
               Expanded(
                 child: Center(
@@ -153,7 +141,6 @@ Widget build(BuildContext context) {
                 ),
               ),
 
-            // Empty state
             if (_recipes == null && !_loading && _error == null)
               const Expanded(
                 child: Center(
@@ -172,7 +159,6 @@ Widget build(BuildContext context) {
                 ),
               ),
 
-            // Recipe cards
             if (_recipes != null && !_loading)
               Expanded(
                 child: ListView.builder(
@@ -210,7 +196,6 @@ class _RecipeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Recipe name
               Text(
                 recipe.name,
                 style: const TextStyle(
@@ -220,8 +205,6 @@ class _RecipeCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-
-              // Meta row
               Row(
                 children: [
                   const Icon(Icons.timer, size: 14, color: Colors.grey),
@@ -254,8 +237,6 @@ class _RecipeCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-
-              // Ingredients preview
               Text(
                 'Uses: ${recipe.ingredientsUsed.join(', ')}',
                 style: const TextStyle(fontSize: 12, color: Color(0xFF40916C)),
