@@ -8,13 +8,18 @@ import 'features/ingredients/add_ingredient_screen.dart';
 import 'features/recipes/recipe_screen.dart';
 import 'features/recipes/recipe_detail_screen.dart';
 import 'features/recipes/recipe_model.dart';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/login',
+  refreshListenable: GoRouterRefreshStream(
+    FirebaseAuth.instance.authStateChanges(),
+  ),
   redirect: (context, state) {
-    final container = ProviderScope.containerOf(context);
-    final authState = container.read(authStateProvider);
-    final isLoggedIn = authState.valueOrNull != null;
+    final user = FirebaseAuth.instance.currentUser;
+    final isLoggedIn = user != null;
     final onAuthPage =
         state.matchedLocation == '/login' || state.matchedLocation == '/signup';
 
@@ -38,5 +43,20 @@ final appRouter = GoRouter(
         return RecipeDetailScreen(recipe: recipe);
       },
     ),
+    GoRoute(path: '/recipes', builder: (_, __) => const RecipeScreen()),
   ],
 );
+
+class GoRouterRefreshStream extends ChangeNotifier {
+  late final StreamSubscription<dynamic> _sub;
+
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    _sub = stream.listen((_) => notifyListeners());
+  }
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+}
